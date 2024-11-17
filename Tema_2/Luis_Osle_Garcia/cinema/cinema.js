@@ -28,6 +28,8 @@ let butacas = setup();
 console.log(butacas);
 
 function suggest(numAsientos) {
+    let resultado = null;
+
     for (let i = N - 1; i >= 0; i--) {
         let consecutivos = 0;
         let asientosFila = new Set();
@@ -37,26 +39,33 @@ function suggest(numAsientos) {
                 consecutivos++;
                 asientosFila.add(butacas[i][j].id);
                 if (consecutivos === numAsientos) {
-                    // Marca los asientos como reservados
-                    asientosFila.forEach(id => {
-                        for (let i = 0; i < N; i++) {
-                            for (let j = 0; j < N; j++) {
-                                if (butacas[i][j].id === id) {
-                                    butacas[i][j].estado = true;
+                    // Encontramos y guardamos el resultado
+                    resultado = { fila: i, asientos: Array.from(asientosFila) };
+                    
+                    // Se marcan para que no se seleccionen más
+                    for (let id of asientosFila) {
+                        for (let x = 0; x < N; x++) {
+                            for (let y = 0; y < N; y++) {
+                                if (butacas[x][y].id === id) {
+                                    butacas[x][y].estado = true;
                                 }
                             }
                         }
-                    });
-                    return { fila: i, asientos: asientosFila };
+                    }
+                    // Para salir del bucle
+                    j = N; 
                 }
             } else {
                 consecutivos = 0;
                 asientosFila.clear();
             }
         }
+        if (resultado) {
+            i = -1; // Para salir del bucle
+        }
     }
 
-    return new Set();
+    return resultado || new Set();
 }
 
 // Ejemplo de uso
